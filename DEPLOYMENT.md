@@ -2,28 +2,13 @@
 
 ## Frontend (Vercel) & Backend (Railway) Deployment
 
-### 1. Backend Deployment on Railway
+### Current Production URLs:
+- **Backend**: https://sportsync-production-afb3.up.railway.app:8080
+- **Frontend**: (Deploy to Vercel)
 
-1. **Push to GitHub**
-   ```bash
-   git add .
-   git commit -m "Add deployment configuration"
-   git push origin main
-   ```
+### 1. Backend Deployment on Railway ✅
 
-2. **Deploy to Railway**
-   - Go to [railway.app](https://railway.app)
-   - Connect your GitHub repository
-   - Select the `backend` folder as the root directory
-   - Railway will automatically detect the Node.js app and deploy
-
-3. **Environment Variables**
-   Set these in Railway dashboard:
-   - `NODE_ENV=production`
-   - `PORT=3000` (Railway sets this automatically)
-
-4. **Get your Railway URL**
-   After deployment, Railway will give you a URL like: `https://sportssync-backend.up.railway.app`
+Your backend is already deployed at: `https://sportsync-production-afb3.up.railway.app:8080`
 
 ### 2. Frontend Deployment on Vercel
 
@@ -38,38 +23,29 @@
    vercel --prod
    ```
 
-3. **Set Environment Variable**
-   During deployment or in Vercel dashboard:
-   - `VITE_API_URL=https://your-railway-url.railway.app`
-   Replace with your actual Railway URL
+3. **Environment Variable**
+   The `VITE_API_URL` is already set in `vercel.json` to:
+   ```
+   https://sportsync-production-afb3.up.railway.app:8080
+   ```
 
 4. **Alternative: Vercel Dashboard**
    - Go to [vercel.com](https://vercel.com)
    - Import your GitHub repository
    - Set root directory to `frontend`
-   - Add environment variable `VITE_API_URL`
+   - Environment variable is pre-configured
 
-### 3. Update API Configuration
-
-After getting your Railway URL, update the frontend environment variable:
-
-```bash
-# In Vercel dashboard or via CLI
-vercel env add VITE_API_URL production
-# Enter: https://your-railway-url.railway.app
-```
-
-### 4. Verify Deployment
+### 3. Verify Deployment
 
 1. **Backend Health Check**
    ```bash
-   curl https://your-railway-url.railway.app/health
+   curl https://sportsync-production-afb3.up.railway.app:8080/health
    ```
 
 2. **Frontend**
    Visit your Vercel URL and test the application
 
-### 5. Local Development
+### 4. Local Development
 
 To run locally with production-like setup:
 
@@ -90,20 +66,30 @@ npm run dev
 ```
 Sportssync--main/
 ├── backend/
-│   ├── railway.json          # Railway deployment config
-│   ├── nixpacks.toml         # Railway build config
-│   └── server.js             # Express server
+│   ├── package.json             # Node.js configuration
+│   └── server.js                # Express server (port 8080)
 ├── frontend/
-│   ├── vercel.json           # Vercel deployment config
-│   └── src/config/api.js     # API configuration
-├── Dockerfile                # Docker deployment (alternative)
-├── docker-compose.yml        # Docker Compose (alternative)
-└── DEPLOYMENT.md             # This file
+│   ├── vercel.json              # Vercel deployment config
+│   └── src/config/api.js        # API configuration
+└── DEPLOYMENT.md                # This file
 ```
+
+### Configuration Details
+
+**Backend (Railway):**
+- Port: 8080 (Railway default)
+- Health check: `/health`
+- Node.js 18+
+- No database required
+
+**Frontend (Vercel):**
+- Static build with Vite
+- API calls to Railway backend
+- Environment variable: `VITE_API_URL`
 
 ### Troubleshooting
 
-- **CORS Issues**: Ensure backend allows your Vercel domain
-- **API Calls**: Check that `VITE_API_URL` is set correctly in Vercel
-- **Build Failures**: Verify all dependencies are in package.json
-- **Health Checks**: Railway uses `/health` endpoint to verify app is running
+- **CORS Issues**: Backend allows all origins with cors()
+- **API Calls**: Verify Railway backend is accessible
+- **Build Failures**: Check Vercel build logs
+- **Health Checks**: Railway monitors `/health` endpoint
