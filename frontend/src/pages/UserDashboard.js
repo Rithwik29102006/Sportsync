@@ -1,3 +1,5 @@
+import { API_ENDPOINTS } from '../config/api.js';
+
 export function UserDashboard() {
   setTimeout(initDashboardLogic, 0);
 
@@ -29,7 +31,7 @@ async function initDashboardLogic() {
     
     let recentActivities = [];
     try {
-      const activitiesRes = await fetch('http://localhost:3000/api/user/activities');
+      const activitiesRes = await fetch(API_ENDPOINTS.users + '/activities');
       if (activitiesRes.ok) {
         recentActivities = await activitiesRes.json();
       }

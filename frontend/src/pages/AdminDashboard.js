@@ -1,3 +1,5 @@
+import { API_ENDPOINTS } from '../config/api.js';
+
 export function AdminDashboard() {
   setTimeout(initAdminLogic, 0);
   
@@ -15,15 +17,15 @@ async function initAdminLogic() {
   if(!container) return;
 
   try {
-    const statsRes = await fetch('http://localhost:3000/api/admin/stats');
+    const statsRes = await fetch(API_ENDPOINTS.admin + '/stats');
     if (!statsRes.ok) throw new Error('Failed to load stats');
     const adminStats = await statsRes.json();
     
-    const groundsRes = await fetch('http://localhost:3000/api/grounds');
+    const groundsRes = await fetch(API_ENDPOINTS.grounds);
     if (!groundsRes.ok) throw new Error('Failed to load grounds');
     const grounds = await groundsRes.json();
     
-    const gamesRes = await fetch('http://localhost:3000/api/games');
+    const gamesRes = await fetch(API_ENDPOINTS.admin + '/games');
     const games = gamesRes.ok ? await gamesRes.json() : [];
     
     // Build grounds HTML

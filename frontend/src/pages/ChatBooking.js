@@ -1,3 +1,5 @@
+import { API_ENDPOINTS } from '../config/api.js';
+
 export function ChatBooking() {
   // We'll manage chat state internally with purely functional render logic, but since it's vanilla, we'll attach an init script after rendering.
   
@@ -180,7 +182,7 @@ function initChatLogic() {
           
           // API Call to Backend
           const b = window.appState.bookingCache;
-          fetch('http://localhost:3000/api/bookings', {
+          fetch(API_ENDPOINTS.admin + '/bookings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sport: b.sport, ground: b.ground, time: b.time })

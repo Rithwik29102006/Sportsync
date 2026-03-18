@@ -1,4 +1,5 @@
 import './style.css';
+import API_BASE_URL from './config/api.js';
 
 window.onerror = function(message, source, lineno, colno, error) {
   document.body.innerHTML = `<div style="color:red; padding: 2rem; background: white; z-index:9999; position:relative;"><h3>JS Error</h3><p>${message}</p><p>${source}:${lineno}</p></div>`;
@@ -123,7 +124,6 @@ window.appState = {
   adminStats: null,
   grounds: []
 };
-const API_BASE_URL = 'http://localhost:3000/api';
 
 const appContainer = document.getElementById('main-content');
 const navbarContainer = document.getElementById('navbar-container');
