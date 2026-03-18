@@ -1,5 +1,6 @@
-import './style.css';
-import API_BASE_URL, { testApiConnection } from './config/api.js';
+// Temporarily remove CSS import to test
+// import './style.css';
+// import API_BASE_URL, { testApiConnection } from './config/api.js';
 
 console.log('🚀 SportsSync main.js loading...');
 
