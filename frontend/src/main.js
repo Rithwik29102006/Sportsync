@@ -1,8 +1,38 @@
 import './style.css';
-import API_BASE_URL from './config/api.js';
+import API_BASE_URL, { testApiConnection } from './config/api.js';
 
 window.onerror = function(message, source, lineno, colno, error) {
-  document.body.innerHTML = `<div style="color:red; padding: 2rem; background: white; z-index:9999; position:relative;"><h3>JS Error</h3><p>${message}</p><p>${source}:${lineno}</p></div>`;
+  console.error('JavaScript Error:', { message, source, lineno, colno, error });
+  document.body.innerHTML = `
+    <div style="color:red; padding: 2rem; background: white; z-index:9999; position:relative; font-family: system-ui;">
+      <h3>⚠️ Application Error</h3>
+      <p><strong>Error:</strong> ${message}</p>
+      <p><strong>File:</strong> ${source}:${lineno}</p>
+      <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        Reload Page
+      </button>
+    </div>
+  `;
+};
+
+// Add unhandled promise rejection handler
+window.onunhandledrejection = function(event) {
+  console.error('Unhandled Promise Rejection:', event.reason);
+  document.body.innerHTML = `
+    <div style="color:orange; padding: 2rem; background: white; z-index:9999; position:relative; font-family: system-ui;">
+      <h3>⚠️ Network Error</h3>
+      <p>The application encountered a network error. This might be due to:</p>
+      <ul style="text-align: left; margin: 1rem 0;">
+        <li>Backend server is temporarily unavailable</li>
+        <li>Network connectivity issues</li>
+        <li>CORS configuration problems</li>
+      </ul>
+      <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        Try Again
+      </button>
+    </div>
+  `;
+  event.preventDefault();
 };
 
 // Importing Pages
@@ -282,18 +312,57 @@ window.addEventListener('popstate', router);
 // Initialize App
 async function init() {
   try {
+    // Show loading state
+    const appContainer = document.getElementById('main-content');
+    if (appContainer) {
+      appContainer.innerHTML = `
+        <div style="display: flex; justify-content: center; align-items: center; min-height: 60vh; font-family: system-ui;">
+          <div style="text-align: center;">
+            <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+            <p style="color: #666;">Loading SportsSync...</p>
+          </div>
+        </div>
+        <style>
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        </style>
+      `;
+    }
+
+    // Test API connection
+    const apiConnected = await testApiConnection();
+    if (!apiConnected) {
+      console.warn('API connection failed, app will run in offline mode');
+    }
+
     // Check for stored user session
     const storedUser = localStorage.getItem('sportssync_user');
     if (storedUser) {
       window.appState.user = JSON.parse(storedUser);
     }
-    // If no stored user, keep user as null (not logged in)
+    
+    renderNavbar();
+    router();
   } catch (err) {
-    console.error('Failed to initialize app state:', err);
+    console.error('Failed to initialize app:', err);
+    // Show error but don't crash
+    const appContainer = document.getElementById('main-content');
+    if (appContainer) {
+      appContainer.innerHTML = `
+        <div style="display: flex; justify-content: center; align-items: center; min-height: 60vh; font-family: system-ui;">
+          <div style="text-align: center; padding: 2rem;">
+            <h3 style="color: #dc3545; margin-bottom: 1rem;">⚠️ Startup Error</h3>
+            <p style="color: #666; margin-bottom: 1rem;">Failed to initialize the application.</p>
+            <button onclick="window.location.reload()" style="padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              Try Again
+            </button>
+          </div>
+        </div>
+      `;
+    }
   }
-  
-  renderNavbar();
-  router();
 }
 
 document.addEventListener('DOMContentLoaded', init);
