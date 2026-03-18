@@ -60,6 +60,8 @@ async function fetchGroundsAndSlots() {
     const slotsRes = await fetch(API_ENDPOINTS.slots);
     if (slotsRes.ok) {
       slotsData = await slotsRes.json();
+    } else {
+      slotsData = getDefaultSlots();
     }
     
     renderGrounds();
@@ -67,6 +69,7 @@ async function fetchGroundsAndSlots() {
     console.error('Failed to fetch data:', err);
     // Use default data as fallback
     groundsData = getDefaultGrounds();
+    slotsData = getDefaultSlots();
     renderGrounds();
   }
 }
@@ -78,6 +81,25 @@ function getDefaultGrounds() {
     { id: 'g3', name: 'Central Court', sport: 'Basketball', address: '789 Center Blvd', image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&q=80', rating: 4.8, price: 1200 },
     { id: 'g4', name: 'Riverside Ground', sport: 'Cricket', address: '321 River Rd', image: 'https://images.unsplash.com/photo-1531415074968-b074b837a6b3?w=600&q=80', rating: 4.6, price: 2000 }
   ];
+}
+
+function getDefaultSlots() {
+  const slots = [];
+  const grounds = ['g1', 'g2', 'g3', 'g4'];
+  const times = ['06:00', '07:00', '08:00', '09:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'];
+  
+  grounds.forEach(gId => {
+    times.forEach((time, index) => {
+      slots.push({
+        id: `s-${gId}-${index}`,
+        groundId: gId,
+        time: time,
+        price: 500 + (Math.floor(Math.random() * 10) * 100),
+        available: Math.random() > 0.3
+      });
+    });
+  });
+  return slots;
 }
 
 let currentFilter = 'all';
