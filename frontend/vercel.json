@@ -9,13 +9,13 @@
       }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "env": {
-    "VITE_API_URL": "https://sportsync-production-afb3.up.railway.app:8080"
+    "VITE_API_URL": "https://sportsync-production-afb3.up.railway.app"
   }
 }
