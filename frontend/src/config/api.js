@@ -1,7 +1,5 @@
 // Try production URL first, fallback to localhost for development
-const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  'https://sportsync-production-afb3.up.railway.app:8080' || 
-  'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export const API_ENDPOINTS = {
   grounds: `${API_BASE_URL}/api/grounds`,
@@ -9,7 +7,8 @@ export const API_ENDPOINTS = {
   bookSlot: `${API_BASE_URL}/api/slots/book`,
   chat: `${API_BASE_URL}/api/chat`,
   users: `${API_BASE_URL}/api/users`,
-  admin: `${API_BASE_URL}/api/admin`
+  admin: `${API_BASE_URL}/api/admin`,
+  auth: `${API_BASE_URL}/api/auth`
 };
 
 export default API_BASE_URL;

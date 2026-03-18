@@ -1,6 +1,6 @@
+import { API_ENDPOINTS } from '../config/api.js';
+
 export function LoginPage() {
-  // Show login page first - user will enter credentials and then navigate to dashboard
-  
   setTimeout(() => {
     initLoginLogic();
   }, 0);
@@ -10,7 +10,6 @@ export function LoginPage() {
     window.location.reload();
   };
   
-  // Store navigateTo for use in initLoginLogic
   window.loginNavigateTo = navigateTo;
   
   return `
@@ -26,28 +25,13 @@ export function LoginPage() {
         
         <form id="login-form" class="flex flex-column gap-4">
           <div>
-            <label class="text-sm font-medium mb-2" style="display: block;">Login as</label>
-            <div class="flex gap-2">
-              <button type="button" class="login-type-btn btn btn-outline flex-1 active" data-type="user">
-                <i class="ph-bold ph-user"></i> User
-              </button>
-              <button type="button" class="login-type-btn btn btn-outline flex-1" data-type="trainer">
-                <i class="ph-bold ph-chalkboard-teacher"></i> Trainer
-              </button>
-              <button type="button" class="login-type-btn btn btn-outline flex-1" data-type="admin">
-                <i class="ph-bold ph-shield-check"></i> Admin
-              </button>
-            </div>
-          </div>
-          
-          <div>
             <label class="text-sm font-medium mb-2" style="display: block;">Email</label>
-            <input type="email" id="login-email" class="input-field" placeholder="Enter your email" required>
+            <input type="email" id="login-email" class="input-field" placeholder="user@sportssync.com" required>
           </div>
           
           <div>
             <label class="text-sm font-medium mb-2" style="display: block;">Password</label>
-            <input type="password" id="login-password" class="input-field" placeholder="Enter your password" required>
+            <input type="password" id="login-password" class="input-field" placeholder="••••••••" required>
           </div>
           
           <button type="submit" class="btn btn-primary w-full" style="padding: 1rem; margin-top: 1rem;">
@@ -56,11 +40,11 @@ export function LoginPage() {
         </form>
         
         <div class="text-center mt-6">
-          <p class="text-sm text-muted">
-            Demo credentials:<br>
-            <span class="text-primary">User: user@sportssync.com / user123</span><br>
-            <span class="text-warning">Trainer: trainer@sportssync.com / trainer123</span><br>
-            <span class="text-accent">Admin: admin@sportssync.com / admin123</span>
+          <p class="text-sm text-muted" style="background: transparent; padding: 1rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+            <strong class="text-primary">Demo Credentials</strong><br>
+            User: user@sportssync.com / user123<br>
+            Trainer: trainer@sportssync.com / trainer123<br>
+            Admin: admin@sportssync.com / admin123
           </p>
         </div>
       </div>
@@ -69,77 +53,64 @@ export function LoginPage() {
 }
 
 function initLoginLogic() {
-  const typeBtns = document.querySelectorAll('.login-type-btn');
-  let selectedType = 'user';
-  
-  typeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      typeBtns.forEach(b => {
-        b.classList.remove('active', 'btn-primary');
-        b.classList.add('btn-outline');
-      });
-      btn.classList.remove('btn-outline');
-      btn.classList.add('active', 'btn-primary');
-      selectedType = btn.getAttribute('data-type');
-    });
-  });
-  
   const form = document.getElementById('login-form');
+  if (!form) return;
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const email = document.getElementById('login-email').value;
+    const email = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
     
-    if (selectedType === 'user') {
-      if (email === 'user@sportssync.com' && password === 'user123') {
-        window.appState.user = {
-          id: '1',
-          name: 'Alex Hunter',
-          type: 'user',
-          email: email,
-          avatar: 'https://i.pravatar.cc/150?u=1',
-          location: { lat: 40.7128, lng: -74.0060 },
-          stats: { gamesPlayed: 24, winRate: '68%', hoursPlayed: '42h', connections: 15 }
-        };
+    window.notify('Authenticating...', 'info');
+    
+    try {
+      // Try backend authentication
+      const res = await fetch(`${API_ENDPOINTS.auth}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        window.appState.user = data.user;
         localStorage.setItem('sportssync_user', JSON.stringify(window.appState.user));
-        window.notify('Welcome back, Alex!', 'success');
-        window.loginNavigateTo('/profile');
-      } else {
-        window.notify('Invalid user credentials', 'error');
+        window.notify(`Welcome back, ${data.user.name}!`, 'success');
+        
+        // Redirect based on role
+        if (data.user.type === 'trainer') {
+          window.loginNavigateTo('/trainer');
+        } else if (data.user.type === 'admin') {
+          window.loginNavigateTo('/admin');
+        } else {
+          window.loginNavigateTo('/profile');
+        }
+        return;
       }
-    } else if (selectedType === 'trainer') {
-      if (email === 'trainer@sportssync.com' && password === 'trainer123') {
-        window.appState.user = {
-          id: 't1',
-          name: 'Rahul Sharma',
-          type: 'trainer',
-          email: email,
-          avatar: 'https://i.pravatar.cc/150?u=rahul',
-          sport: 'cricket',
-          stats: { totalSessions: 156, rating: 4.9, students: 42, experience: '15 years' }
-        };
-        localStorage.setItem('sportssync_user', JSON.stringify(window.appState.user));
-        window.notify('Welcome back, Rahul!', 'success');
-        window.loginNavigateTo('/profile');
-      } else {
-        window.notify('Invalid trainer credentials', 'error');
-      }
-    } else if (selectedType === 'admin') {
-      if (email === 'admin@sportssync.com' && password === 'admin123') {
-        window.appState.user = {
-          id: '0',
-          name: 'Admin User',
-          type: 'admin',
-          email: email,
-          avatar: 'https://i.pravatar.cc/150?u=admin'
-        };
-        localStorage.setItem('sportssync_user', JSON.stringify(window.appState.user));
-        window.notify('Welcome back, Admin!', 'success');
-        window.loginNavigateTo('/profile');
-      } else {
-        window.notify('Invalid admin credentials', 'error');
-      }
+    } catch (err) {
+      console.warn('Backend auth unreachable, trying local fallback:', err);
+    }
+    
+    // Local Fallback (Improved to handle all roles)
+    let user = null;
+    if (email === 'user@sportssync.com' && password === 'user123') {
+      user = { id: '1', name: 'Alex Hunter', type: 'user', email, avatar: 'https://i.pravatar.cc/150?u=1', stats: { gamesPlayed: 24, winRate: '68%', hoursPlayed: '42h', connections: 15 } };
+    } else if (email === 'trainer@sportssync.com' && password === 'trainer123') {
+      user = { id: 't1', name: 'Rahul Sharma', type: 'trainer', email, avatar: 'https://i.pravatar.cc/150?u=rahul', sport: 'cricket', stats: { totalSessions: 156, rating: 4.9, students: 42, experience: '15 years' } };
+    } else if (email === 'admin@sportssync.com' && password === 'admin123') {
+      user = { id: '0', name: 'Admin User', type: 'admin', email, avatar: 'https://i.pravatar.cc/150?u=admin' };
+    }
+
+    if (user) {
+      window.appState.user = user;
+      localStorage.setItem('sportssync_user', JSON.stringify(user));
+      window.notify(`Welcome back, ${user.name} (Offline Mode)!`, 'success');
+      
+      const target = user.type === 'trainer' ? '/trainer' : user.type === 'admin' ? '/admin' : '/profile';
+      window.loginNavigateTo(target);
+    } else {
+      window.notify('Invalid credentials', 'error');
     }
   });
 }

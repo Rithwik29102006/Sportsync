@@ -14,12 +14,15 @@ function initTrainerDashboardLogic() {
   const container = document.getElementById('trainer-dashboard-container');
   if(!container) return;
   
-  const trainer = window.appState.user;
+  const trainer = window.appState.user || { name: 'Guest Trainer', stats: { totalSessions: 0, rating: 0, students: 0, experience: 'N/A' }, sport: 'sports' };
+  const statsData = trainer.stats || { totalSessions: 0, rating: 0, students: 0, experience: 'N/A' };
+  const trainerSport = trainer.sport || 'Sports';
+  
   const stats = [
-    { label: 'Total Sessions', value: trainer.stats.totalSessions.toString(), icon: 'ph-calendar-check', color: 'var(--primary)' },
-    { label: 'Rating', value: trainer.stats.rating, icon: 'ph-star', color: 'var(--warning)' },
-    { label: 'Active Students', value: trainer.stats.students.toString(), icon: 'ph-users', color: 'var(--accent)' },
-    { label: 'Experience', value: trainer.stats.experience, icon: 'ph-clock', color: 'var(--success)' }
+    { label: 'Total Sessions', value: (statsData.totalSessions || 0).toString(), icon: 'ph-calendar-check', color: 'var(--primary)' },
+    { label: 'Rating', value: (statsData.rating || 0).toString(), icon: 'ph-star', color: 'var(--warning)' },
+    { label: 'Active Students', value: (statsData.students || 0).toString(), icon: 'ph-users', color: 'var(--accent)' },
+    { label: 'Experience', value: statsData.experience || 'N/A', icon: 'ph-clock', color: 'var(--success)' }
   ];
 
   const statCards = stats.map(stat => `
@@ -79,14 +82,14 @@ function initTrainerDashboardLogic() {
       <!-- Profile Header -->
       <div class="glass-card flex align-center justify-between flex-wrap gap-6 mb-8" style="padding: 2rem; background: linear-gradient(to right, rgba(24, 24, 27, 0.8), rgba(245, 158, 11, 0.15)); border-left: 4px solid var(--warning);">
         <div class="flex align-center gap-6">
-          <img src="${trainer.avatar}" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--glass-border); box-shadow: var(--shadow-lg);">
+          <img src="${trainer.avatar || 'https://i.pravatar.cc/150?u=trainer'}" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--glass-border); box-shadow: var(--shadow-lg);">
           <div>
             <h2 class="text-3xl font-heading mb-2">${trainer.name}</h2>
             <p class="text-muted flex align-center gap-2">
-              <i class="ph-fill ph-sport text-warning"></i> ${trainer.sport.charAt(0).toUpperCase() + trainer.sport.slice(1)} Trainer
+              <i class="ph-fill ph-shield-check text-warning"></i> ${trainerSport.charAt(0).toUpperCase() + trainerSport.slice(1)} Trainer
             </p>
             <p class="text-sm text-primary mt-2">
-              <i class="ph-fill ph-star text-warning"></i> ${trainer.stats.rating} Rating • ${trainer.stats.totalSessions} Sessions Completed
+              <i class="ph-fill ph-star text-warning"></i> ${statsData.rating || 0} Rating • ${statsData.totalSessions || 0} Sessions Completed
             </p>
           </div>
         </div>

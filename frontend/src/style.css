@@ -220,7 +220,7 @@ button {
 .input-field {
   width: 100%;
   padding: 0.875rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: transparent;
   border: 1px solid var(--glass-border);
   border-radius: 12px;
   color: var(--text-main);
@@ -233,11 +233,19 @@ button {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 2px var(--primary-glow);
-  background: rgba(255, 255, 255, 0.05);
+  background: transparent;
 }
 
 .input-field::placeholder {
   color: var(--text-muted);
+}
+
+.input-field:-webkit-autofill,
+.input-field:-webkit-autofill:hover,
+.input-field:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text-main);
+  -webkit-box-shadow: 0 0 0px 1000px #09090b inset !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 /* Badge */
